@@ -114,8 +114,8 @@ const BusinessToolDetail = ({ language = "en", t, setCurrentPage, setLanguage, s
     },
   };
 
-  const tool = toolsData[toolId];
-  const currentImage = tool.images[currentImageIndex];
+  const tool = toolsData[toolId] || toolsData[1];
+  const currentImage = tool && tool.images ? tool.images[currentImageIndex] : null;
 
   const handlePrevImage = () => {
     setCurrentImageIndex((prev) => 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./App.css";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { translations } from "./translations";
 import Intro from "./components/Intro/Intro"; // <-- ดึง intro แยกไฟล์
 import NewsArticles from "./components/NewsArticles/NewsArticles";
@@ -14,6 +15,10 @@ import BusinessToolDetail from "./pages/BusinessToolDetail/BusinessToolDetail";
 
 
 function App() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { page, id } = useParams();
+  
   const [language, setLanguage] = useState("en"); // 'th' or 'en'
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
   const [mobileLangDropdownOpen, setMobileLangDropdownOpen] = useState(false);
@@ -503,6 +508,46 @@ function App() {
       }, 100);
     }
   }, [currentPage]);
+
+  // Read URL and update currentPage accordingly
+  useEffect(() => {
+    const pathname = location.pathname;
+    
+    if (pathname === "/") {
+      setCurrentPage("home");
+    } else if (pathname === "/about") {
+      setCurrentPage("about");
+    } else if (pathname === "/awards") {
+      setCurrentPage("awardsDetail");
+    } else if (pathname.startsWith("/social-activity/")) {
+      const activityId = pathname.split("/").pop();
+      setSocialActivityId(parseInt(activityId) || 1);
+      setCurrentPage("socialActivityDetail");
+    } else if (pathname === "/executive") {
+      setCurrentPage("executiveDetail");
+    } else if (pathname.startsWith("/business-tool/")) {
+      const toolId = pathname.split("/").pop();
+      setBusinessToolId(parseInt(toolId) || 1);
+      setCurrentPage("businessToolDetail");
+    }
+  }, [location.pathname]);
+
+  // Sync currentPage with URL
+  useEffect(() => {
+    if (currentPage === "home") {
+      navigate("/");
+    } else if (currentPage === "about") {
+      navigate("/about");
+    } else if (currentPage === "awardsDetail") {
+      navigate("/awards");
+    } else if (currentPage === "socialActivityDetail") {
+      navigate(`/social-activity/${socialActivityId}`);
+    } else if (currentPage === "executiveDetail") {
+      navigate("/executive");
+    } else if (currentPage === "businessToolDetail") {
+      navigate(`/business-tool/${businessToolId}`);
+    }
+  }, [currentPage, socialActivityId, businessToolId, navigate]);
 
   return (
     <div className="page">
